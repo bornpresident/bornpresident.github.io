@@ -1,9 +1,13 @@
 ---
-title: Guardrail 
+title: Guardrail
 author: Vishal Chand
-date: 2025-01-17 
-categories: [Artificial Intelligence]
-tags: [LLM Security , Guardrail] 
+date: 2025-01-17
+categories:
+  - Artificial Intelligence
+tags:
+  - LLM
+  - Security
+  - Guardrail
 pin: false
 math: true
 mermaid: true
@@ -67,7 +71,7 @@ Why do we need our own guardrails? While global frameworks provide common princi
   - Re-checks output against specifications
 - Limitations:
   - Only works with text-level checks
-  - ==Cannot handle multimodal content (images/audio)==
+  - Cannot handle multimodal content (images/audio)
   - Classification: Type-2 neural-symbolic system, using symbolic algorithms supported by learning algorithms (classifier models)
 
 #### TruLens:
