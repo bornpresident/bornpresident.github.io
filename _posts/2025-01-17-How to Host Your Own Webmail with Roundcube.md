@@ -45,7 +45,7 @@ your-server-ip   <hostname>
 hostname -f
 ```
 
-### Setup 2 : Install Apache, MariaDB & PHP
+### Step 2 : Install Apache, MariaDB & PHP
 
 * Roundcube requires Apache, MariaDB and PHP to be installed on your server. You can install them with the following command:
 
