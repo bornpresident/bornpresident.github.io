@@ -1,7 +1,7 @@
 ---
 title: Anti-Analysis Techniques
 author: Vishal Chand
-date: 2025-01-18
+date: 2024-11-18
 categories:
   - Malware Analysis
 tags:
@@ -66,7 +66,7 @@ jz <debugged>
   - FLG_HEAP_VALIDATE_PARAMETERS (0x40)
 
 Example assembly code:
-```asm
+```shell
 mov eax, large fs:30h        ; PEB struct loaded into EAX
 mov eax, [eax+68h]          ; NtGlobalFlag saved to EAX
 sub eax, 70h                ; Compare with debug flags
@@ -100,7 +100,7 @@ call s_selfDelete           ; Debugger detected, delete self
 - timeGetSystemTime
 
 Example timing check code:
-```asm
+```shell
 RDTSC                           ;get time 1st value
 PUSH EAX                       ;save 1st value in stack 
 XOR EAX, EAX
