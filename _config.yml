@@ -23,7 +23,7 @@ title: Vishal Chand # the main title
 tagline: Cyber Security Enginner | LLM Security | MacOS & Windows Malware analyst # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
-  😎
+  
 
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
 url: "https://bornpresident.github.io"
@@ -70,7 +70,7 @@ google_analytics:
 #     light  - Use the light color scheme
 #     dark   - Use the dark color scheme
 #
-theme_mode: dark
+theme_mode: # [light | dark]
 
 # The CDN endpoint for images.
 # Notice that once it is assigned, the CDN url
