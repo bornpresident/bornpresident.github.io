@@ -11,7 +11,7 @@ pin: false
 math: true
 mermaid: true
 image:
-  path: assets/img/posts/2.png
+  path: /assets/img/posts/2.png
 ---
 
 - **Postfix:** An open-source mail transfer agent (MTA) that handles sending and receiving emails using SMTP.
