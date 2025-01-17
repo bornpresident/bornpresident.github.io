@@ -70,7 +70,7 @@ google_analytics:
 #     light  - Use the light color scheme
 #     dark   - Use the dark color scheme
 #
-theme_mode: # [light | dark]
+theme_mode: dark
 
 # The CDN endpoint for images.
 # Notice that once it is assigned, the CDN url
@@ -92,11 +92,11 @@ comments:
     shortname: # fill with the Disqus shortname. › https://help.disqus.com/en/articles/1717111-what-s-a-shortname
   # utterances settings › https://utteranc.es/
   utterances:
-    repo: bornpresident/bornpresident.github.io
+    repo: 
     issue_term: title
   # Giscus options › https://giscus.app
   giscus:
-    repo: bornpresident/bornpresident.github.io
+    repo: 
     repo_id:
     category:
     category_id:
