@@ -1,12 +1,11 @@
 ---
-title: Guardrail
+title: Guardrail Comparison
 author: Vishal Chand
 date: 2025-01-17
 categories:
   - Artificial Intelligence
 tags:
-  - LLM
-  - Security
+  - LLM Security
   - Guardrail
 pin: false
 math: true
