@@ -156,12 +156,12 @@ postmap /etc/postfix/virtual_mailbox_domains
 ```
 * Edit the Postfix master configuration file:
 
-```
+```shell
 nano /etc/postfix/master.cf
 ```
 
 * Uncomment the following line : 
-```
+```shell
 submission inet n       -       y       -       -       smtpd
 ```
 * Save and close the file when you are finished.
@@ -173,18 +173,19 @@ apt-get install dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd -y
 ```
 
 * Define the Dovecot mail location to communicate with Postfix and virtual mailbox domains.
-```
+
+```shell
 nano /etc/dovecot/conf.d/10-mail.conf
 ```
 
 * Find the following line:
 
-```
+```shell
 mail_location = mbox:~/mail:INBOX=/var/mail/%u
 ```
 
 Replace it with 
-```
+```shell
 mail_location = maildir:/var/mail/vhosts/%d/%n
 ```
 
@@ -192,25 +193,27 @@ Save and close the file.
 
 * Create the Dovecot vhosts directory and the sub-directory for your domain name.
 
-```
+```shell
 mkdir /var/mail/vhosts
 mkdir /var/mail/vhosts/example.com
 ```
 
-* Create a vmail user and a group, and assign the ownership of the directories to the vmail user.
-```
+* Create a mail user and a group, and assign the ownership of the directories to the vmail user.
+
+```shell
 groupadd -g 5000 vmail
 useradd -r -g vmail -u 5000 vmail -d /var/mail/vhosts -c "virtual mail user"
 chown -R vmail:vmail /var/mail/vhosts/
 ```
 
 * Edit the Dovecot master configuration file and enable IMAP and POP3 secure services:
-```
+
+```shell 
 nano /etc/dovecot/conf.d/10-master.conf
 ```
 
 * Find the following lines:
-```
+```shell
 inet_listener imaps {
     #port = 993
     #ssl = yes
@@ -219,7 +222,7 @@ inet_listener imaps {
 
 And replace them with the following:
 
-```
+```shell
 inet_listener imaps {
     port = 993
     ssl = yes
@@ -228,7 +231,7 @@ inet_listener imaps {
 
 On the same file, find the following lines:
 
-```
+```shell
 inet_listener pop3s {
     #port = 995
     #ssl = yes
@@ -237,7 +240,7 @@ inet_listener pop3s {
 
 And replace them with the following:
 
-```
+```shell 
 inet_listener pop3s {
     port = 995
     ssl = yes
@@ -246,7 +249,7 @@ inet_listener pop3s {
 
 Next, find the following lines:
 
-```
+```shell
 service lmtp {
 unix_listener lmtp {
 #mode = 0666
@@ -254,7 +257,7 @@ unix_listener lmtp {
 ```
 
 And replace them with the following:
-```
+```shell
 service lmtp {
 unix_listener /var/spool/postfix/private/dovecot-lmtp {
 mode = 0600
@@ -265,7 +268,7 @@ group = postfix
 
 Next, find the following lines:
 
-```
+```shell
 service  auth {
   # Postfix smtp-auth
   #unix_listener /var/spool/postfix/private/auth {
@@ -276,7 +279,7 @@ service  auth {
 
 And replace them with the following:
 
-```
+```shell
 service auth {
 ...
 #Postfix smtp-auth
@@ -290,36 +293,38 @@ group=postfix
 Save and close the file when you are finished.
 
 * Set up the Dovecot authentication process
-```
+
+```shell
 nano /etc/dovecot/conf.d/10-auth.conf
 ```
 
 Uncomment the following line:
 
-```
+```shell
 disable_plaintext_auth = yes
 ```
 
 On the same file, find the following line:
 
-```
+```shell
 auth_mechanisms = plain
 ```
 
 And replace it with the following:
 
-```
+```shell
 auth_mechanisms = plain login
 ```
 
 * Comment out the following line to disable the default Dovecot behaviour for authenticating users.
-```
+
+```shell
 #!include auth-system.conf.ext
 ```
 
 Next, uncomment the following line to enable password file configuration.
 
-```
+```shell
 !include auth-passwdfile.conf.ext
 ```
 
@@ -327,11 +332,12 @@ Save and close the file/
 
 Next, edit the /etc/dovecot/conf.d/auth-passwdfile.conf.ext  file:
 
-```
+```shell
 nano /etc/dovecot/conf.d/auth-passwdfile.conf.ext
 ```
 Change the file as shown below:
-```
+
+```shell
 passdb {
   driver = passwd-file
   args = scheme=PLAIN username_format=%u /etc/dovecot/dovecot-users
@@ -346,13 +352,13 @@ Save and close the file.
 
 * Create a password file for the user you want to assign an email account:
 
-```
+```shell
 nano /etc/dovecot/dovecot-users
 ```
 
 Add the following lines:
 
-```
+```shell
 admin@example.com:admin@123
 ```
 
@@ -361,58 +367,61 @@ Save and close
 ### Step 6 :Configure Dovecot to Use Let’s Encrypt SSL
 
 * Configure Dovecot to work with SSL. You can do it by editing the file /etc/dovecot/conf.d/10-ssl.conf:
-```
+
+```shell
 nano /etc/dovecot/conf.d/10-ssl.conf
 ```
 
 Find the following line:
-```
+
+```shell
 ssl = yes
 ```
 
 Replace it with the following:
 
-```
+```shell
 ssl = required
 ```
 
 Next, find the following lines:
 
-```
+```shell
 #ssl_cert = </etc/dovecot/dovecot.pem
 #ssl_key = </etc/dovecot/private/dovecot.pem
 ```
 
 And replace them with the following:
 
-```
+```shell
 ssl_cert = </etc/letsencrypt/live/email.example.com/fullchain.pem
 ssl_key = </etc/letsencrypt/live/email.example.com/privkey.pem
 ```
 
 Save and close the file when you are finished, then restart the Postfix and Dovecot services to apply the configuration changes:
 
-```
+```shell
 systemctl restart postfix
 systemctl restart dovecot
 ```
 
 ### Step 7 : Install and Configure Roundcube
 
-```
+```shell
 apt-get install roundcube
 ```
 
 During the installation, you will be prompted to configure the database. Choose your desired option and hit **Enter** to finish the installation.
 
 * Configure the Apache virtual host for Roundcube. You can do it by editing the file /etc/apache2/sites-enabled/000-default.conf:
-```
+
+```shell
 nano /etc/apache2/sites-enabled/000-default.conf
 ```
 
 Change the file as shown below:
 
-```
+```shell
 <VirtualHost *:80>
         Alias /mail /usr/share/roundcube
 
@@ -427,12 +436,13 @@ Change the file as shown below:
 
 Save and close the file, then restart the Apache web service to apply the changes:
 
-```
+```shell
 systemctl restart apache2
 ```
 
 Access your Roundcube Webmail 
 
-```
+```shell
 http://email.VISHALCHAND.com/mail.
 ```
+
