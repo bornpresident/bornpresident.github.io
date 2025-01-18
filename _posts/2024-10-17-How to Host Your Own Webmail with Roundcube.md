@@ -2,11 +2,8 @@
 title: How to Host Your Own Webmail with Roundcube
 author: Vishal Chand
 date: 2024-10-17
-categories:
-  - Security Operation Centre
-tags: 
-  - Email
-  - Rouncube
+categories: [Security Operation Centre]
+tags: [Email, Rouncube]
 pin: false
 math: true
 mermaid: true
