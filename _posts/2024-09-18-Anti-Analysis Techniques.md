@@ -1,11 +1,9 @@
 ---
-title: Anti-Analysis Techniques
+title: Windows OS Anti-Analysis Techniques
 author: Vishal Chand
 date: 2024-09-18
-categories:
-  - Malware Analysis
-tags:
-  - Anti-Analysis Techniques
+categories: [Malware Analysis]
+tags: [Windows]
 pin: false
 math: true
 mermaid: true
