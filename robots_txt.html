@@ -1,1 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        body {
+            background-color: #000000;
+            color: #00FF00;
+        }
+        .terminal-cursor {
+            animation: blink 1s step-end infinite;
+        }
+        * {
+            font-family: 'Courier New', monospace;
+            color: #00FF00;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="border border-[#00FF00] p-4">
+            <div class="mb-4">
+                <div>
+                    <span>root@kali:~# cat vishal_profile.txt</span>
+                    <span class="terminal-cursor">█</span>
+                </div>
+            </div>
+            
+            <pre>
+===========================================
+SECURITY ANALYST PROFILE - CONFIDENTIAL
+===========================================
 
+IDENTITY: VISHAL CHAND
+STATUS: ACTIVE
+CLEARANCE: LEVEL 5
+-------------------------------------------
+
+CURRENT POSITION:
+* Software Engineer (Cyber Security) - IIT Bombay
+* Focus: ML/LLM Security, Threat Analysis
+
+EDUCATION:
+* MSc Cyber Security & Digital Forensics
+  - Rashtriya Raksha University
+* BCA - Panjab University
+
+CRITICAL SKILLS:
++------------------------------------------+
+|  * Malware Analysis & Reverse Engineering |
+|  * Advanced Threat Detection              |
+|  * Memory Forensics                      |
+|  * VAPT & Red Team Operations            |
+|  * Security Operations & Incident Response|
++------------------------------------------+
+
+MAJOR ACHIEVEMENTS:
+[>] DEFCON Delhi Speaker - MTD & APT Defense
+[>] Cython 2024 Champion - ₹3,00,000 Prize
+[>] Deepfake Detection System Developer
+[>] Published Memory Forensics Researcher
+
+ACTIVE OPERATIONS:
+* PROJECT_MTD: Moving Target Defense Research
+* PROJECT_DEEPFAKE: AI Security Implementation
+* PROJECT_MEMORY: Forensics Framework Dev
+
+SECURITY CLEARANCES:
+- ISO/IEC 27001 Certified
+- NCIIPC Verified
+- NCC 'C' Certificate
+
+===========================================
+EOF - SECURITY LEVEL 5 ACCESS REQUIRED
+===========================================
+
+root@kali:~# _</pre>
+        </div>
+    </div>
+</body>
+</html>
