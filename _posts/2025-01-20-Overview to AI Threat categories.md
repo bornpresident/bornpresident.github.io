@@ -12,10 +12,9 @@ image:
 ---
 I will be categorizing the threats into three primary parts:
 
-1. **Traditional Vulnerabilities in AI**  
-2. **AI-Specific Attacks** (e.g., *Backdoors, Arbitrary Code Execution*)  
-3. **Infrastructure Vulnerabilities**  
-
+1. **AI-Specific Attacks** (e.g., *Backdoors, Arbitrary Code Execution*)  
+2. **Infrastructure Vulnerabilities**  
+3. **Traditional Vulnerabilities in AI** 
 
 **First things first**: To get up to speed, I highly recommend you read these foundational resources:
 
@@ -31,10 +30,8 @@ These will provide a solid understanding and context for the following content, 
 ### Vulnerability in Model file formats 
 
 
-Before geeting into depth lets see small example :injecting reverse shell payload. When the instance of class get deseralized with pickle it executes the payload.
+Before geeting into depth lets see small example :Injecting reverse shell payload. When the instance of class get deseralized with pickle it executes the payload.
 ![2](/assets/img/posts/9.png)
-
-_joblib_
 
 ![1](/assets/img/posts/10.png)
 
@@ -52,6 +49,7 @@ Why AI Model Loaders brings vulnerability?
 2. Unchecked array access
 3. Blind trust in header values 
 4. Missing size validation 
+
 How attacks happens ? 
 Step 1:  The file header includes a n_kv field that tells the loader how many key-value pairs to expect.
 Step 2: The loader allocates an array based on this number
@@ -111,6 +109,13 @@ model = Sequential([
 >If a ML tool loads Keras models with Lambda layers from untrusted sources, treat it like loading a script file. Look for patterns in code or docs: "We support loading arbitrary Keras models." That can be a red flag if no sandboxing is mentioned.
 {: .prompt-info }
 
+Impact :
+1. Access sensitive information (e.g., SSH keys, cloud credentials)
+2. Execute malicious code on your system
+3. Use the compromised system as a vector for broader attacks
+
+Remediation: If possible, avoid using Keras models with Lambda layers since a lambda layer allows for arbitrary code execution that can be exploited by an attacker.
+
 ### Deserialization of untrusted Data 
 
 
@@ -138,6 +143,7 @@ c.send(pickle.dumps(payload()))
 ```
 
 and then the file `/tmp/hacked` has been illegally created at the victim's local machine.
+
 Impact: Remote code execution in the victim's machine.
 
 ## Infrastructure Vulnerabilities
@@ -181,8 +187,6 @@ The most common vulnerabilities in AI systems are traditional security issues:
 Let's go through some examples : 
 ### CSRF
 In 2023, CSRF allowed to delete runs and perform other operations in [aimhubio/aim](https://github.com/aimhubio/aim)
-
-All three aspect of CIA were severely hampered
 
 >CSRF (Cross-Site Request Forgery) is a vulnerability where attackers trick a user's browser into performing unintended actions on an authenticated web application. The AIM dashboard lacks protection against CSRF and CORS attacks, allowing attackers to execute actions like deleting runs on the user's behalf.
   {: .prompt-warning }
