@@ -8,7 +8,7 @@ pin: false
 math: false
 mermaid: false
 image: 
-path: /assets/img/posts/8.png
+    path: /assets/img/posts/8.png
 ---
 I will be categorizing the threats into three primary parts:
 
