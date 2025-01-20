@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        #terminal {
+            border: 1px solid #00ff00;
+            height: 90vh;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        #terminal-window {
+            white-space: pre-wrap;
+        }
+        
+        .input-line {
+            display: flex;
+            margin: 5px 0;
+        }
+        
+        .prompt {
+            color: #00ff00;
+            margin-right: 10px;
+        }
+        
+        #input {
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: inherit;
+            outline: none;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #00ff00;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .close { background-color: #ff5f56; }
+        .minimize { background-color: #ffbd2e; }
+        .maximize { background-color: #27c93f; }
+
+        .title {
+            color: #00ff00;
+            text-align: center;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrix"></canvas>
+    <div id="terminal">
+        <div class="header">
+            <div class="window-controls">
+                <div class="control close"></div>
+                <div class="control minimize"></div>
+                <div class="control maximize"></div>
+            </div>
+            <div class="title">Charlie0x16 Terminal v1.0.0</div>
+            <div style="width: 50px;"></div>
+        </div>
+        <div id="terminal-window"></div>
+        <div class="input-line">
+            <span class="prompt">root@kali:~$</span>
+            <input type="text" id="input" autofocus>
+        </div>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal-window');
+        const input = document.getElementById('input');
+        
+        // Matrix rain effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const letters = '0123456789ABCDEF';
+        const drops = [];
+        const fontSize = 14;
+        const columns = canvas.width/fontSize;
+        for(let x = 0; x < columns; x++) drops[x] = 1;
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+            for(let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+                if(drops[i]*fontSize > canvas.height && Math.random() > 0.975)
+                    drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        const commands = {
+            help: `Available commands:
+    ls              - List all available sections
+    clear           - Clear terminal
+    education       - Show education details
+    skills          - Display technical skills
+    projects        - List all projects
+    achievements    - Show achievements and certifications
+    experience      - Show work experience
+    whoami          - Display basic info
+    contact         - Show contact information`,
+
+            ls: `Directories:
+    📁 education/
+    📁 skills/
+    📁 projects/
+    📁 achievements/
+    📁 experience/
+    📁 contact/`,
+
+            education: `[*] EDUCATION RECORDS:
+    
+    > M.Sc. Cyber Security & Digital Forensics
+      └─ Rashtriya Raksha University (RRU)
+      └─ 2022 - 2024
+    
+    > Bachelors of Computer Application (BCA)
+      └─ Panjab University
+      └─ 2018 - 2021
+    
+    > Higher Secondary
+      └─ Kendriya Vidyalaya High Grounds
+      └─ 2018`,
+
+            skills: `[*] TECHNICAL CAPABILITIES:
+    
+    > Primary Skills:
+      └─ Malware Analysis
+      └─ Information Security
+      └─ Threat Hunting
+      └─ Memory Forensics
+      └─ Security Operations
+    
+    > Programming:
+      └─ Python
+      └─ Rust
+      └─ Bash scripting
+      └─ C/C++
+      └─ Java`,
+
+            projects: `[*] PROJECT DATABASE:
+    
+    > Moving Target Defense (MTD)
+        └─ Dynamic file extension randomization
+    
+    > The Deepfake Slayer
+      └─ 2nd position nationally
+      └─ Prize: ₹50,000
+      └─ Accuracy: 92% image, 90% video, 87% audio
+    
+    > Dependence Aware Linux Kernel Fuzzer
+      └─ 1st position in Cython 2024
+       
+    > Malicious QR Code Detector
+      └─ Browser plugin for Cyber-THON 2023`,
+
+            achievements: `[*] ACHIEVEMENTS AND CERTIFICATIONS:
+    
+    > Speaking Engagements:
+      └─ DEFCON Delhi Speaker
+      └─ IIT Bombay Speaker
+    
+    > Certifications:
+      └─ NCC "C" Certificate (A grade)
+      └─ ISO/IEC 27001 Information Security Associate
+      └─ Zscaler Cybersecurity Fundamental Associate
+      └─ OSINT Fundamentals by TCM Security`,
+
+            experience: `[*] OPERATIONAL HISTORY:
+    
+    > IIT Bombay (Current)
+      └─ Software Engineer (Cyber Security)
+      └─ ML/LLM Security Research
+    
+    > NCIIPC, NTRO
+      └─ Cyber Security Intern
+      └─ Malware Analysis & Threat Detection
+    
+    > Pre-Doctoral Research
+           └─ Security Operations Centre Development`,
+
+            whoami: `[*] IDENTITY CONFIRMED:
+    
+    > Vishal Chand
+      └─ Cyber Security Engineer
+      └─ Malware Analyst
+      └─ Security Researcher`,
+
+            contact: `[*] SECURE COMMUNICATION CHANNELS:
+    
+    > Email: vishalchand20016@gmail.com
+      > Code: Github`
+        };
+
+        // Initial welcome message
+        terminal.innerHTML = `Welcome to Shera Shera Naushera v1.0.0
+Type "help" for available commands\n`;
+
+        function handleCommand(cmd) {
+            const trimmedCmd = cmd.trim().toLowerCase();
+            if (trimmedCmd === 'clear') {
+                terminal.innerHTML = '';
+                return;
+            }
+            if (commands[trimmedCmd]) {
+                return commands[trimmedCmd];
+            }
+            return `Command not found: ${cmd}. Type "help" for available commands.`;
+        }
+
+        input.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                const command = input.value;
+                terminal.innerHTML += `\nroot@kali:~$ ${command}\n`;
+                const output = handleCommand(command);
+                if (output) {
+                    terminal.innerHTML += output + '\n';
+                }
+                input.value = '';
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+        });
+
+        // Keep focus on input
+        document.addEventListener('click', function() {
+            input.focus();
+        });
+    </script>
+</body>
+</html>
