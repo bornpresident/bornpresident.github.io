@@ -19,7 +19,8 @@ Common Anti-Static Anlysis Approaches
 
 ## String based obfuscation methods & bypass
 ### 1. Sensitive Strings Disgusied as Constants 
->Note: Use Disassember :)
+Note: Use Disassember :)
+
 Sentive strings are splited into chunks,because of chunk size `strings` command may miss those sensitve data.
 Solution ? Instruct the disassembler to decode the constants as characters instead of the default, hexadecimal. In the Hopper disassembler, you can simply `CTRL-click` the constant and select Characters to use the `SHIFT-R` keyboard shortcut 
 
@@ -59,7 +60,7 @@ main:
 
 ```
 ### 2. Encrpted Strings 
->Note: Use Dissambler and then Debbuger 
+`Note: Use Dissambler and then Debbuger`
 1. You can use Network mointor which can help us passively recover the address of malware's C2.Same can be achieved by debugger
 2. You could also set a breakpoint on the return instruction (retn) within the decryption function. When the breakpoint is hit you’ll once again find the decrypted string in the RAX register.
 3. A more efficient approach would be to add additional debugger commands (via breakpoint command add) to the breakpoint. Then, once the breakpoint is hit, your breakpoint commands will be automatically executed and could just print out the register holding the decrypted string and then allow the process to automatically continue. If you’re interested in the caller, perhaps to locate where a specific decrypted string is used, consider printing out the stack backtrace as well.
