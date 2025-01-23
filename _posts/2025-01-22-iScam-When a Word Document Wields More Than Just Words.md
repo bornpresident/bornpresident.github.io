@@ -10,9 +10,8 @@ mermaid: true
 image:
   path: /assets/img/posts/11.png
 ---
-```
-description: Analyzing MacOS word documentg malware 
-```
+Analyzing macOS Word Document Malware
+
 Malware sample : [Click me](https://objective-see.com/downloads/blog/blog_0x3A/BitcoinQuestions.zip)
 
 First let's confirm file type by using `file` command.
