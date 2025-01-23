@@ -1,7 +1,7 @@
 ---
 title: MacOS Malware:Anti-Analysis Tactics and Bypass Techniques
 author: Vishal Chand
-date: 2025-01-25
+date: 2025-01-23
 categories: [Malware Analysis]
 tags: [MacOS,Anti-Analysis]
 pin: false
