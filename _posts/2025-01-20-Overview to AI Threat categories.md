@@ -736,5 +736,8 @@ It can be verified that running this code will create the `spoken.spoken` file i
 
 Impact : This vulnerability is capable of executing arbitrary code on the instance running AutoGPT.
 
-Reference :[CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Co](https://cwe.mitre.org/data/definitions/78.html)
+Reference 
+1. [CWE-78: Improper Neutralization of Special Elements used in an OS Command](https://cwe.mitre.org/data/definitions/78.html)
+2. [Protect AI](https://protectai.com/insights/knowledge-base/deserialization-threats/PAIT-GGUF-101)
+3. [Reserach paper stacks](https://dreadnode.notion.site/2582fe5306274c60b85a5e37cf99da7e?v=74ab79ed1452441dab8a1fa02099fedb)
 
