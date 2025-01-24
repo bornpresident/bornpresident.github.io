@@ -310,4 +310,58 @@ Once located, bypass the anti-analysis mechanisms by altering the environment, p
 Modify MAC address 
 
 ### 2. Patching the binary image 
-Updating.....
+In this we bypass anti-analysis logic by patching the malware's on-disk binary image. Example Mac malwaere `KeRanger` it sleep for serval days before executing payload. During satic analysis it was found that the function aptly named waitOrExit that is responsible for implementing the
+wait delay. It is invoked by the startEncrypt function, which begins the process of ransoming users’ files.
+```shell
+startEncrypt:
+...
+214 Chapter 9
+0x000000010000238b call waitOrExit
+0x0000000100002390 test eax, eax
+0x0000000100002392 je leave
+```
+To bypass the delay logic so that the malware will immediately continue execution, we can modify the malware’s binary code to skip the call to the waitOrExit function.
+In a hex editor, we change the bytes of the malware’s executable instructions from a call to a nop. Short for “no operation,” a nop is an instruction (0x90 on Intel platforms) that instructs the CPU to do, well, nothing.
+
+> Issues:
+1. First, if the malware is packed with a non-UPX packer that is difficult to unpack.
+2. On-disk patches involve more work than less permanent methods.
+3. Any modification to a binary will invalidate any of its cryptographic signatures. 
+{: .prompt-warning}
+
+### 3. Modifying the malware's Instruction pointer 
+
+Manipulating the program’s instruction pointer, which points to the next instruction that the CPU will execute. This value is stored in the program counter register, which on `64-bit` Intel systems is the `RIP` register. You can set a breakpoint on the
+anti-analysis logic, and when the breakpoint is hit, modify the instruction pointer to, for example, skip over problematic logic.
+
+You can change the value of any register via the reg write debugger command. 
+
+```shell
+(lldb) reg write $rip <new value>
+```
+> Manipulating the instruction pointer of a program can have serious side effects if not done correctly. For example, if a manipulation causes an unbalanced or misaligned stack, that program may crash. 
+{: .prompt-warning}
+
+### 4. Modifying a register Value 
+
+We can set a breakpoint on the instruction that performs the check of the value returned by the is_debugging function. Once this breakpoint is hit, the `EAX register` will
+contain a nonzero value, as the malware will have detected our debugger.However, via the debugger, we can surreptitiously toggle the value in EAX to 0
+
+```shell
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+->  0x10000b89f: cmpl $0x0, %eax
+    0x10000b8a2: je 0x10000b8b2
+    0x10000b8a8: movl $0x1, %edi
+    0x10000b8ad: callq exit
+
+(lldb) reg read $eax
+rax = 0x00000001
+
+(lldb) reg write $eax 0
+```
+### 5. Enviromentally Generated Keys
+
+Sophisticated malware authors employ protection encryption schemes that use environmentally generated keys. These keys are generated on the victim’s system and
+are thus unique to a specific instance of an infection.
+
+The only way to analyze the malware is either by performing the analysis directly on the infected system or by performing it on a memory dump of the malware captured on the infected system.
