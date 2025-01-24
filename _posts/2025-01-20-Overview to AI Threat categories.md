@@ -175,7 +175,7 @@ Impact
 A malicious user can access and export the entire data of all organizations. This could lead to major privacy violations, intellectual property theft, and exposure of sensitive business information
 
 
-## Traditional vulnerabilities
+## Traditional vulnerabilities with examples from past
 
 The most common vulnerabilities in AI systems are traditional security issues:
 
