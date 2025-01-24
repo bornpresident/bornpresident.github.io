@@ -163,7 +163,6 @@ he library code scans over the malware’s entire __cstring segment,which contai
 nvram boot-args="amfi_get_out_of_my_way=0x1
 ```
 ## Code-level Obfuscation 
-
 Malware author adds `spurious`or `garbage` at compile time. These instructions are Non-operations. 
 
 ### Bypassing Packed Binary Code 
