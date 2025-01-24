@@ -163,4 +163,151 @@ he library code scans over the malware’s entire __cstring segment,which contai
 nvram boot-args="amfi_get_out_of_my_way=0x1
 ```
 ## Code-level Obfuscation 
+Malware author adds `spurious`or `garbage` at compile time. These instructions are Non-operations. 
+
+### Bypassing Packed Binary Code 
+Packer is used which compresses binary code to prevent static anlysis while also inserting a small unpacker stub at the entry point of the bianry. The well known packer is UPX.
+```shell
+upx -d <MALWARE>
+```
+Example:
+```shell
+% upx -d ColdRoot.app/Contents/MacOS/com.apple.audio.driver
+                Ultimate Packer for eXecutables
+                    Copyright (C) 1996 - 2013
+With LZMA support, Compiled by Mounir IDRASSI (mounir@idrix.fr)
+File size                 Ratio           Format                   Name
+--------------------      ------        ----------- -     ---------------------
+3292828 <- 983040         29.85%        Mach/i386         com.apple.audio.driver
+
+Unpacked 1 file.
+```
+#### Methods to know binary is packed or not:
+1. Much higher level of randomness than normal binary instuctions.
+2. Leverage `string` command.
+3. Load the binary in your disassembly and persue the code and you may observe the following:
+- Unsual section names. You can use `Mach-O viewer` tool. Eg- UPX adds a section named `_XHDR`.
+- A majority of strings obfsucated/
+- Large chunks of executable code that can't be diassembled.
+- A low number of imports (references to external API)
+
+> To get binary unpack run the packed sample under the watchful eye of a debugger, and once the unpacker stub has executed, dump the unprotected binary from memory
+with the memory read LLDB command.
+{: .prompt-tip }
+
+### Decrypting encrypted Binaries
+To automatically decrypt the malware at runtime, the encryptor will often insert a decryptor stub and keying information at the start of the binary unless the operating system natively.Anti-Analysis 203
+supports encrypted binaries, which macOS does.
+
+To recover the malware’s unencrypted instructions is to dump the unprotected binary code from memory once the decryption code has executed. For this specific malware specimen, its unencrypted code
+can be found from address 0x7000 to 0xbffff. The following debugger command will save its unencrypted code to disk for static analysis:
+
+```shell
+lldb) memory read --binary --outfile /tmp/dumped.bin 0x7000 0xbffff --force
+```
+## Anti-dynamic Analysis Approaches
+
+Malware author uses common approaches such as `Virtual Machine detection` & `Analysis tool detection`
+
+See if you are using debugger it may prematurely exits. So the first goal is finf the code which is reposnisble(For this use static Analysis) and after that you can bypass the code by patching it out or skipping it in debugger session.
+
+## How malware detect it's VM or debugger? 
+
+### Checking the system MAC 
+
+How? The malware invokes the system API to execute it. If the API returns a nonzero value, the malware will prematurely exit.
+```shell
+rax = decodeString(&encodedString);
+if (system(rax) != 0x0) goto leave;
+
+leave:
+  rax = exit(0xffffffffffffffff);
+  return rax;
+}
+```
+System name can be known bu `hw.model`. So, In VM, this command will return a nonzero,as the value for `hw.model` will not contain `Mac`.
+
+```shell
+#When it's VM 
+% sysctl hw.model
+hw.model: VMware<Version>
+
+# When it's MAC 
+% sysctl hw.model
+hw.model: MacBookAir7,2
+```
+### Counting the system's Logical & Physical CPUs 
+How? By executing the following command:
+```shell
+echo $((`sysctl -n hw.logicalcpu`/`sysctl -n hw.physicalcpu`))|grep 2 > /dev/null
+```
+> The malware checks the ratio of logical to physical CPUs. On virtual machines, this value is often 1. If it’s not 2, the malware exits. On native hardware, the ratio is typically 2, allowing the malware to proceed.
+{: .prompt-warning }
+
+### Checking the system's MAC address 
+By checkingorganizationally unique identifier (OUI). If MAC address = OUI of any VM then it will exit.
+
+### Checking System Integrity Protection Status
+If SIP is disabled,then malware exits. Why? Because malware analysts, who often require the ability to debug any and all processes, will often disable
+SIP on their analysis machines. 
+
+Malware author will execute macOS’s `csrutil` command to determine the status of SIP. 
+```shell
+(lldb) po [$rdi launchPath]
+/bin/sh.
+
+(lldb) po [$rdi arguments]
+<__NSArrayI 0x10580dfd0>(
+-c,
+  command -v csrutil > /dev/null && csrutil status |
+  grep -v "enabled" > /dev/null && echo 1 || echo 0
+)
+``` 
+### Detecting or Killing Specific Tools
+
+### Detecting debugger
+> Apple’s developer documentation, a process should first invoke the sysctl API with CTL_KERN, KERN_PROC, KERN_PROC_PID, and its process identifier (pid), as parameters. Also, a kinfo_proc structure should be provided.14
+The sysctl function will then populate the structure with information about the process, including a P_TRACED flag. If set, this flag means the process is currently being debugged
+{: .prompt-tip}
+
+###### Preventing Debugging with `ptrace`
+Malware can accomplish this by invoking the `ptrace` system call with the `PT_DENY_ATTACH` flag. This Apple-specific flag prevents a debugger from attaching and tracing the malware. Attempting to debug a process that
+invokes ptrace with the PT_DENY_ATTACH flag will fail.
+
+```shell
+% lldb proton
+...
+(lldb) r
+Process 666 exited with status = 45 (0x0000002d)
+```
+> You can tell the malware has the PT_DENY_ATTACH flag set because it prematurely exits with a status of 45.Calls to the ptrace function with the `PT_DENY_ATTACH` flag are fairly easy
+to spot (for example, by examining the binary’s imports). 
+{: .prompt-tip}
+
+## Bypassing Anti-dynamic Analysis logic
+
+2 STEPS!!!! IDENTIFY THE LOCATION OD ANTI-ANLYSIS LOGIC & THEN PREVENTING ITS EXECUTION.
+
+Strings or function names, like **is_debugging** and **is_virtual_mchn**, may indicate the malware's aversion to analysis, by using **nm** command.
+
+> If you step over a function and the malware immediately exits, it’s likely that some anti-analysis logic was triggered. If this occurs, simply restart the debugging session and step into the
+function to examine the code more closely.
+{: .prompt-tip}
+
+A trial-and-error approach for analyzing malware can be summarized as:  
+
+1. Start debugging the malicious sample from the very beginning to avoid triggering anti-analysis logic.  
+2. Set breakpoints on APIs like **sysctl** and **ptrace** that may detect virtual machines or debugging.  
+3. Step through the code manually, examining arguments if breakpoints are hit (e.g., **ptrace** with **PT_DENY_ATTACH**). Use backtraces to locate the triggering code.  
+4. If the malware exits while stepping over a function, restart and step into the function to identify anti-analysis logic.  
+
+Once located, bypass the anti-analysis mechanisms by altering the environment, patching the binary, modifying control flow, or adjusting values in the debugger.
+
+## Let's bypass!
+
+### 1. modifying the execution enviroment
+Modify MAC address 
+
+### 2. Patching the binary image 
 Updating.....
+
