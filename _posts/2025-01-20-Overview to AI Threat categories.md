@@ -35,7 +35,7 @@ Before geeting into depth lets see small example :Injecting reverse shell payloa
 
 ![1](/assets/img/posts/10.png)
 
-_Injecting a payload into model file and when victim when load that model file payload get executed_
+_Injecting a payload into model file and when victim load that model file payload get executed_
 
 >After training a model like ChatGPT, you need to save those weights somewhere. These files aren't just simple data blobs - they're complex formats like Pickle, ONNX, Safetensors, and GGUF, each with their own parsing quirks and potential vulnerabilities.
 {: .prompt-info }
