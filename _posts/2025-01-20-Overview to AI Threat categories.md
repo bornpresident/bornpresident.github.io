@@ -42,7 +42,7 @@ _Injecting a payload into model file and when victim load that model file payloa
 
 #### Arbitrary Code Execution in GGUF 
 
-In frameworks using the new GGUF format (used by libraries like ggml), parsing logic that reads the model's key-value pairs can be misused. If the code doesn't properly validate header fields (like n_kv, the number of key-value entries), it can lead to out-of-bounds writes on the heap.
+Frameworks using the new GGUF format (used by libraries like ggml), parsing logic that reads the model's key-value pairs can be misused. If the code doesn't properly validate header fields (like n_kv, the number of key-value entries), it can lead to out-of-bounds writes on the heap.
 
 Why AI Model Loaders brings vulnerability? 
 1. Integers overflows in allocation
@@ -51,9 +51,9 @@ Why AI Model Loaders brings vulnerability?
 4. Missing size validation 
 
 How attacks happens ? 
-Step 1:  The file header includes a n_kv field that tells the loader how many key-value pairs to expect.
-Step 2: The loader allocates an array based on this number
-Step 3: If n_kv is huge or manipulated, the code writes past the allocated memory, potentially corrupting the heap
+1. The file header includes a `n_kv` field that tells the loader how many key-value pairs to expect.
+2. The loader allocates an array based on this number
+3. If `n_kv` is huge or manipulated, the code writes past the allocated memory, potentially corrupting the heap
 
 ```shell
 // Code reading n_kv from the file and allocating an array without proper checks
