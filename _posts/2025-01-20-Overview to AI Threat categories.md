@@ -16,7 +16,7 @@ I will be categorizing the threats into three primary parts:
 2. **Infrastructure Vulnerabilities**  
 3. **Traditional Vulnerabilities in AI** 
 
-**First things first**: To get up to speed, I highly recommend you read these foundational resources:
+**First thing**: To get up to speed, I highly recommend you read these foundational resources:
 
 - [Weaponizing ML Models with Ransomware](https://hiddenlayer.com/innovation-hub/weaponizing-machine-learning-models-with-ransomware/#Introduction)
 - The [OWASP Top 10 for ML](https://mltop10.info/OWASP-Machine-Learning-Security-Top-10.pdf)
