@@ -273,7 +273,7 @@ Impact
 - Update data for runs
 - Steal data such as log records, notes and other data in the dashboard
 ###  XSS via chat information tooltip in [open-webui/open-webui](https://github.com/open-webui/open-webui)
-There is an XSS vulnerability in the function that constructs the HTML for tooltips. When a shared chat is opened, various operations can be performed with the victim's privileges.
+There was an XSS vulnerability in the function that constructs the HTML for tooltips. When a shared chat is opened, various operations can be performed with the victim's privileges.
 
 Pasting the PoC below into the browser's Developer Tools will generate a URL that triggers XSS.
 
