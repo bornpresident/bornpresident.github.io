@@ -85,9 +85,8 @@ Impact :
 
 Refrecnes : 
 1. [CVE-2024-34359](https://github.com/abetlen/llama-cpp-python/security/advisories/GHSA-56xg-wfcc-g829)
-2. [Jinja template](https://jinja.palletsprojects.com/en/3.1.x/)
-3. [GGUF](https://github.com/ggerganov/ggml/blob/master/docs/gguf.md)
-4. [llama.cpp](https://github.com/ggerganov/llama.cpp)
+2. [GGUF](https://github.com/ggerganov/ggml/blob/master/docs/gguf.md)
+3. [llama.cpp](https://github.com/ggerganov/llama.cpp)
 
 #### Code Execution risk in Keras Lambda Layers 
 Keras models can contain custom code in Lambda layers. Loading these models runs the code in these layers. While not always malicious, a Lambda layer can execute arbitrary Python code, making them powerful attack vectors if a model file is tampered with.
