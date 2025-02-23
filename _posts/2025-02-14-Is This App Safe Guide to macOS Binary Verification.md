@@ -25,7 +25,6 @@ Apple notarization ensures that the binary has been scanned for security issues.
 spctl -a -vvv -t execute /path/to/binary
 ```
 >What is a Stapled Notarization Ticket in macOS?
-
 In macOS, stapling refers to embedding a notarization ticket inside an app bundle. This allows the app to be verified offline by Gatekeeper without requiring an internet connection.  
 {: .prompt-info }
 
