@@ -10,9 +10,6 @@ mermaid: true
 image:
   path: /assets/img/posts/15.png
 ---
-
-Understanding binary analysis is crucial for malware researchers. When you have access to binary files, you'll be equipped to dissect and analyze malicious code effectively. Let's dive in!
-
 Common Anti-Static Anlysis Approaches 
 1. String based obfsucation/encryption.
 2. Code obfsucation.
