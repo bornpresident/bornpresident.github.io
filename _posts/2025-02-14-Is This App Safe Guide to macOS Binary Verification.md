@@ -1,5 +1,5 @@
 ---
-title: Is This App Safe ?Guide to macOS Binary Verification
+title: Is This App Safe ? Guide to macOS Binary Verification
 author: Vishal Chand
 date: 2025-02-14
 categories: [Malware Analysis]
@@ -101,23 +101,22 @@ nm -gU /path/to/App.app/Contents/MacOS/executable
 ### 9.  Run Dynamically and Observe Behavior
 
 Tools:
-
-1. `dtruss` – Trace system calls:
+`dtruss` – Trace system calls:
 
 ```shell
 sudo dtruss -p $(pgrep AppName)
 ```
-2. `fs_usage` – Monitor file system activity:
+`fs_usage` – Monitor file system activity:
 
 ```shell
 sudo fs_usage -w -f filesys
 ```
-3. `sudo opensnoop` – Track file opens:
+`sudo opensnoop` – Track file opens:
 
 ```shell
 sudo opensnoop -n AppName
 ```
-4. sudo lsof -p <PID> – Check open files:
+sudo lsof -p <PID> – Check open files:
 ```shell
 sudo lsof -p $(pgrep AppName)
 ```
@@ -141,4 +140,92 @@ sudo sysdiagnose -f ~/Desktop/
 ```bash
 codesign -d --entitlements :- /path/to/App.app/Contents/MacOS/executable
 ```
-Look for com.apple.security.automation.apple-events, com.apple.security.network.client, etc.
+Look for `com.apple.security.automation.apple-events`, `com.apple.security.network.client`, etc.
+
+### 12. Check Sandbox Results
+If the app runs inside macOS sandbox:
+```shell
+sandbox-exec -n default /path/to/App.app/Contents/MacOS/executable
+```
+### 13. Check EXIF Data (If App Contains Images or Metadata)
+
+### 14. Go Through Packet Capture After Running
+Start packet capture before running:
+```shell
+sudo tcpdump -i any -nn port 443 or port 80 -w traffic.pcap
+```
+Analyze with Wireshark or tshark:
+
+```shell
+tshark -r traffic.pcap -Y "http.request or tls.handshake"
+```
+### 15. Verifying Apple-Signed Binaries Using Anchor Apple Requirement
+To verify whether a flagged library is legitimately signed by Apple, we first obtain a static code reference using `SecStaticCodeCreateWithPath()`. Next, we compile the requirement string `"anchor apple"` with `SecRequirementCreateWithString()`. Finally, we pass the static code reference to `SecStaticCodeCheckValidity()`. If the API returns `errSecSuccess`, the library is confirmed to be Apple-signed, indicating a false positive detection.
+
+```c
+#include <Security/Security.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <stdio.h>
+
+void checkAnchorApple(const char *binaryPath) {
+    CFURLRef binaryURL = CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8 *)binaryPath, strlen(binaryPath), false);
+    if (!binaryURL) {
+        printf("[-] Failed to create CFURL for binary.\n");
+        return;
+    }
+
+    SecStaticCodeRef staticCode = NULL;
+    if (SecStaticCodeCreateWithPath(binaryURL, kSecCSDefaultFlags, &staticCode) != errSecSuccess) {
+        printf("[-] Failed to create static code reference.\n");
+        CFRelease(binaryURL);
+        return;
+    }
+
+    SecRequirementRef requirement = NULL;
+    if (SecRequirementCreateWithString(CFSTR("anchor apple"), kSecCSDefaultFlags, &requirement) != errSecSuccess) {
+        printf("[-] Failed to create requirement reference.\n");
+        CFRelease(staticCode);
+        CFRelease(binaryURL);
+        return;
+    }
+
+    OSStatus status = SecStaticCodeCheckValidity(staticCode, kSecCSDefaultFlags, requirement);
+    if (status == errSecSuccess) {
+        printf("[+] The binary/library is signed by Apple (meets 'anchor apple' requirement).\n");
+    } else {
+        printf("[-] The binary/library is NOT signed by Apple (or verification failed).\n");
+    }
+
+    CFRelease(requirement);
+    CFRelease(staticCode);
+    CFRelease(binaryURL);
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s /path/to/binary\n", argv[0]);
+        return 1;
+    }
+
+    checkAnchorApple(argv[1]);
+    return 0;
+}
+```
+Example Usage
+
+Compile and run the program:
+
+```shell
+clang -o check_anchor_apple check_anchor_apple.c -framework Security -framework CoreFoundation
+./check_anchor_apple /System/Library/Frameworks/AppKit.framework/AppKit
+```
+Expected Output (For Apple-Signed Binaries):
+
+```shell
+[+] The binary/library is signed by Apple (meets 'anchor apple' requirement).
+```
+Expected Output (For Third-Party or Untrusted Binaries):
+
+```shell
+[-] The binary/library is NOT signed by Apple (or verification failed).
+```
