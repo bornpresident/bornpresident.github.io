@@ -229,3 +229,4 @@ Expected Output (For Third-Party or Untrusted Binaries):
 ```shell
 [-] The binary/library is NOT signed by Apple (or verification failed).
 ```
+Thank you 
